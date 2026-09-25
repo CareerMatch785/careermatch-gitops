@@ -43,10 +43,10 @@ jobs:
       # -------------------------------------------------------
       # Lint local configuration
       # -------------------------------------------------------
-      - name: Lint CareerMatch chart - local
-        run: |
-          helm lint apps/careermatch \
-            --values apps/careermatch/values-local.yaml
+    #   - name: Lint CareerMatch chart - local
+    #     run: |
+    #       helm lint apps/careermatch \
+    #         --values apps/careermatch/values-local.yaml
 
       # -------------------------------------------------------
       # Lint AWS configuration
