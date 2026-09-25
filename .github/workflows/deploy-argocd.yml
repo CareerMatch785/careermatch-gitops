@@ -142,7 +142,28 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
+      - name: Debug AWS Load Balancer Controller
+        run: |
+            echo "=== Deployment ==="
+            kubectl get deployment aws-load-balancer-controller -n kube-system || true
 
+            echo "=== Pods ==="
+            kubectl get pods -n kube-system \
+            -l app.kubernetes.io/name=aws-load-balancer-controller \
+            -o wide || true
+
+            echo "=== Service ==="
+            kubectl get svc aws-load-balancer-webhook-service \
+            -n kube-system || true
+
+            echo "=== Endpoints ==="
+            kubectl get endpoints aws-load-balancer-webhook-service \
+            -n kube-system || true
+
+            echo "=== ServiceAccount ==="
+            kubectl get sa aws-load-balancer-controller \
+            -n kube-system \
+            -o yaml || true
       # =======================================================
       # INSTALL ARGO CD
       # =======================================================
