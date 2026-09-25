@@ -94,10 +94,7 @@ jobs:
           role-to-assume: arn:aws:iam::954976288182:role/ROLE_GITHUBACTIONS_EKS
           aws-region: us-east-1
 
-      - name: Check Load Balancer Controller IAM Role
-        run: |
-            aws iam get-role \
-            --role-name AmazonEKSLoadBalancerControllerRole
+
 
       - name: Check AWS identity
         run: |
@@ -116,6 +113,13 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
+      - name: Verify AWS Load Balancer Controller ServiceAccount
+        run: |
+            kubectl get serviceaccount \
+            aws-load-balancer-controller \
+            -n kube-system \
+            -o yaml
+
       - name: Install AWS Load Balancer Controller
         run: |
             helm repo add eks https://aws.github.io/eks-charts
@@ -129,6 +133,12 @@ jobs:
             --set serviceAccount.name=aws-load-balancer-controller \
             --version 1.14.0
 
+      - name: Wait for AWS Load Balancer Controller
+        run: |
+            kubectl rollout status \
+            deployment/aws-load-balancer-controller \
+            -n kube-system \
+            --timeout=300s
 
       # =======================================================
       # VERIFY AWS LOAD BALANCER CONTROLLER
