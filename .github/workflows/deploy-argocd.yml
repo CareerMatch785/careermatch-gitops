@@ -115,10 +115,15 @@ jobs:
 
       - name: Ensure AWS Load Balancer Controller ServiceAccount
         run: |
+          if ! kubectl get serviceaccount aws-load-balancer-controller \
+            -n kube-system >/dev/null 2>&1; then
+            kubectl create serviceaccount aws-load-balancer-controller \
+              -n kube-system
+          fi
+
           kubectl get serviceaccount aws-load-balancer-controller \
-            -n kube-system >/dev/null 2>&1 || \
-          kubectl create serviceaccount aws-load-balancer-controller \
-            -n kube-system
+            -n kube-system \
+            -o yaml
 
       - name: Install AWS Load Balancer Controller
         run: |
