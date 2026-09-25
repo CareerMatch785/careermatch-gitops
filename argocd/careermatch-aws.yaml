@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: careermatch-aws
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/CareerMatch785/careermatch-gitops.git
+    targetRevision: master
+
+    path: apps/careermatch
+
+    helm:
+      valueFiles:
+        - values-aws.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: carrermatch
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

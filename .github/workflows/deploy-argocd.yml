@@ -1,0 +1,203 @@
+name: Deploy Argo CD to EKS
+
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "argocd/**"
+      - "apps/**"
+      - "platform/**"
+      - ".github/workflows/deploy-argocd.yml"
+
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "argocd/**"
+      - "apps/**"
+      - "platform/**"
+      - ".github/workflows/deploy-argocd.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+
+  # =========================================================
+  # VALIDATE
+  # =========================================================
+  validate:
+    name: Validate Helm manifests
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      # -------------------------------------------------------
+      # Lint local configuration
+      # -------------------------------------------------------
+      - name: Lint CareerMatch chart - local
+        run: |
+          helm lint apps/careermatch \
+            --values apps/careermatch/values-local.yaml
+
+      # -------------------------------------------------------
+      # Lint AWS configuration
+      # -------------------------------------------------------
+      - name: Lint CareerMatch chart - AWS
+        run: |
+          helm lint apps/careermatch \
+            --values apps/careermatch/values-aws.yaml
+
+      # -------------------------------------------------------
+      # Render manifests
+      # -------------------------------------------------------
+      - name: Render CareerMatch chart - AWS
+        run: |
+          helm template careermatch apps/careermatch \
+            --values apps/careermatch/values-aws.yaml \
+            > /tmp/careermatch-rendered.yaml
+
+
+  # =========================================================
+  # DEPLOY / BOOTSTRAP
+  # =========================================================
+  deploy:
+    name: Bootstrap Argo CD on EKS
+
+    if: github.event_name != 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    needs: validate
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+
+      # =======================================================
+      # AWS AUTHENTICATION
+      # =======================================================
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-session-name: argocd-bootstrap-session
+          role-to-assume: arn:aws:iam::954976288182:role/ROLE_GITHUBACTIONS_EKS
+          aws-region: us-east-1
+
+
+      - name: Check AWS identity
+        run: |
+          aws sts get-caller-identity
+
+
+      # =======================================================
+      # CONNECT TO EKS
+      # =======================================================
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region us-east-1 \
+            --name CARRERMATCH-EKS-CLUSTER
+
+          kubectl cluster-info
+          kubectl get nodes
+
+
+      # =======================================================
+      # VERIFY AWS LOAD BALANCER CONTROLLER
+      # =======================================================
+      - name: Verify AWS Load Balancer Controller
+        run: |
+          kubectl get deployment \
+            aws-load-balancer-controller \
+            -n kube-system
+
+
+      # =======================================================
+      # HELM
+      # =======================================================
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+
+      # =======================================================
+      # INSTALL ARGO CD
+      # =======================================================
+      - name: Install or upgrade Argo CD
+        run: |
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm repo update
+
+          helm upgrade --install argocd argo/argo-cd \
+            --namespace argocd \
+            --create-namespace \
+            --set 'configs.params.server\.insecure=true' \
+            --wait \
+            --timeout 5m
+
+
+      # =======================================================
+      # WAIT FOR ARGO CD
+      # =======================================================
+      - name: Wait for Argo CD server
+        run: |
+          kubectl rollout status \
+            deployment/argocd-server \
+            --namespace argocd \
+            --timeout=180s
+
+
+      # =======================================================
+      # BOOTSTRAP GITOPS APPLICATIONS
+      # =======================================================
+      - name: Register Argo CD applications
+        run: |
+          kubectl apply -f argocd/
+
+
+      # =======================================================
+      # VERIFY APPLICATIONS
+      # =======================================================
+      - name: Verify Argo CD applications
+        run: |
+          kubectl get applications \
+            --namespace argocd
+
+
+      # =======================================================
+      # VERIFY INGRESS
+      # =======================================================
+      - name: Wait for Argo CD Ingress
+        run: |
+          echo "Waiting for AWS Load Balancer Controller to create the ALB..."
+
+          for i in {1..30}; do
+
+            ADDRESS=$(kubectl get ingress argocd \
+              -n argocd \
+              -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' \
+              2>/dev/null || true)
+
+            if [ -n "$ADDRESS" ]; then
+              echo "Argo CD ALB created:"
+              echo "http://$ADDRESS"
+              exit 0
+            fi
+
+            echo "Waiting for ALB..."
+            sleep 10
+
+          done
+
+          echo "ALB is still provisioning."
+          kubectl get ingress -n argocd

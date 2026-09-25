@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-service
+
+spec:
+  selector:
+    app: job-service
+
+  ports:
+    - port: {{ .Values.jobService.port }}
+      targetPort: {{ .Values.jobService.port }}
+
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cv-service
+
+spec:
+  selector:
+    app: cv-service
+
+  ports:
+    - port: {{ .Values.cvService.port }}
+      targetPort: {{ .Values.cvService.port }}
+
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matching-service
+spec:
+  type: ClusterIP
+  selector:
+    app: matching-service
+  ports:
+    - port: {{ .Values.matchingService.port }}
+      targetPort: {{ .Values.matchingService.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: frontend
+
+  ports:
+    - port: {{ .Values.frontend.port }}
+      targetPort: {{ .Values.frontend.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-source-service       # Nombre DNS dentro del cluster
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: job-source-service      
+
+  ports:
+    - port: {{ .Values.jobSourceService.port }}       
+      targetPort: {{ .Values.jobSourceService.port }} 
+      protocol: TCP

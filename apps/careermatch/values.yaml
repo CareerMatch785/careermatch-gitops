@@ -1,0 +1,41 @@
+cvService:
+  image:
+    repository: careermatch-cv-service
+    tag: latest
+
+  port: 8081
+
+jobService:
+  image:
+    repository: careermatch-job-service
+    tag: latest
+
+  port: 8082
+
+matchingService:
+  image:
+    repository: careermatch-matching-service
+    tag: latest
+
+  port: 8083
+
+  env:
+    CV_SERVICE_URL: http://cv-service:8081
+    JOB_SERVICE_URL: http://job-service:8082
+
+jobSourceService:
+  image:
+    repository: careermatch-job-source-service
+    tag: latest
+
+  port: 8084
+
+  env:
+    JOB_SERVICE_URL: http://job-service:8082
+
+frontend:
+  image:
+    repository: careermatch-frontend
+    tag: latest
+
+  port: 80

@@ -1,0 +1,51 @@
+cvService:
+  image:
+    repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-cv-service
+    tag: 1.1
+    pullPolicy: Always
+    port: 8081
+  env:
+    DB_URL: jdbc:postgresql://host.minikube.internal:5433/careermatch
+    DB_USERNAME: careermatch
+    DB_PASSWORD: careermatch
+
+jobService:
+  image:
+    repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-job-service
+    tag: 1.1
+    pullPolicy: Always
+  port: 8082
+
+  env:
+    DB_URL: jdbc:postgresql://host.minikube.internal:5433/careermatch_jobs
+    DB_USERNAME: careermatch
+    DB_PASSWORD: careermatch
+    
+matchingService:
+  image:
+    repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-matching-service
+    tag: 1.1
+    pullPolicy: Always
+
+  port: 8083
+
+  env:
+    CV_SERVICE_URL: http://cv-service:8081
+    JOB_SERVICE_URL: http://job-service:8082
+
+jobSourceService:
+  image:
+    repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-job-source-service
+    tag: 1.1
+    pullPolicy: Always
+
+  env:
+    JOB_SERVICE_URL: http://job-service:8082
+    AWS_REGION: us-east-1
+    SQS_JOB_ANALYSIS_QUEUE_URL: https://sqs.us-east-1.amazonaws.com/954976288182/careermatch-job-analysis-queue
+
+frontend:
+  image:
+    repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-frontend
+    tag: 1.1
+    pullPolicy: Always

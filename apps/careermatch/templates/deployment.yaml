@@ -1,0 +1,191 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: job-service
+
+  template:
+    metadata:
+      labels:
+        app: job-service
+
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
+      containers:
+        - name: job-service
+
+          image: "{{ .Values.jobService.image.repository }}:{{ .Values.jobService.image.tag }}"
+
+          imagePullPolicy: {{ .Values.jobService.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.jobService.port }}
+
+          env:
+            - name: DB_URL
+              value: "{{ .Values.jobService.env.DB_URL }}"
+
+            - name: DB_USERNAME
+              value: "{{ .Values.jobService.env.DB_USERNAME }}"
+
+            - name: DB_PASSWORD
+              value: "{{ .Values.jobService.env.DB_PASSWORD }}"
+
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cv-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: cv-service
+
+  template:
+    metadata:
+      labels:
+        app: cv-service
+
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
+      containers:
+        - name: cv-service
+          image: "{{ .Values.cvService.image.repository }}:{{ .Values.cvService.image.tag }}"
+          imagePullPolicy: {{ .Values.cvService.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.cvService.port }}
+
+          env:
+            - name: DB_URL
+              value: {{ .Values.cvService.env.DB_URL | quote }}
+
+            - name: DB_USERNAME
+              value: {{ .Values.cvService.env.DB_USERNAME | quote }}
+
+            - name: DB_PASSWORD
+              value: {{ .Values.cvService.env.DB_PASSWORD | quote }}
+
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-secret
+                  key: OPENAI_API_KEY
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matching-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matching-service
+  template:
+    metadata:
+      labels:
+        app: matching-service
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - name: matching-service
+          image: "{{ .Values.matchingService.image.repository }}:{{ .Values.matchingService.image.tag }}"
+          imagePullPolicy: {{ .Values.matchingService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.matchingService.port }}
+          env:
+            - name: CV_SERVICE_URL
+              value: {{ .Values.matchingService.env.CV_SERVICE_URL | quote }}
+            - name: JOB_SERVICE_URL
+              value: {{ .Values.matchingService.env.JOB_SERVICE_URL | quote }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-source-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: job-source-service
+
+  template:
+    metadata:
+      labels:
+        app: job-source-service
+
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
+      containers:
+        - name: job-source-service
+          image: "{{ .Values.jobSourceService.image.repository }}:{{ .Values.jobSourceService.image.tag }}"
+          imagePullPolicy: {{ .Values.jobSourceService.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.jobSourceService.port }}
+
+          env:
+            - name: JOB_SERVICE_URL
+              value: {{ .Values.jobSourceService.env.JOB_SERVICE_URL | quote }}
+
+            - name: AWS_REGION
+              value: {{ .Values.jobSourceService.env.AWS_REGION | quote }}
+
+            - name: SQS_JOB_ANALYSIS_QUEUE_URL
+              value: {{ .Values.jobSourceService.env.SQS_JOB_ANALYSIS_QUEUE_URL | quote }}
+
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-secret
+                  key: OPENAI_API_KEY
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+---
