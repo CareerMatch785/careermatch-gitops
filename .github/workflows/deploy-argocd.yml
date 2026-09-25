@@ -2,7 +2,7 @@ name: Deploy Argo CD to EKS
 
 on:
   push:
-    branches: ["master"]
+    branches: ["main"]
     paths:
       - "argocd/**"
       - "apps/**"
@@ -10,7 +10,7 @@ on:
       - ".github/workflows/deploy-argocd.yml"
 
   pull_request:
-    branches: ["master"]
+    branches: ["main"]
     paths:
       - "argocd/**"
       - "apps/**"
