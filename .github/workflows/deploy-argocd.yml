@@ -72,7 +72,7 @@ jobs:
   deploy:
     name: Bootstrap Argo CD on EKS
 
-    if: github.event_name != 'pull_request'
+
 
     runs-on: ubuntu-latest
 
