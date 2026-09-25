@@ -134,6 +134,8 @@ jobs:
             eks/aws-load-balancer-controller \
             -n kube-system \
             --set clusterName=CARRERMATCH-EKS-CLUSTER \
+            --set region=us-east-1 \
+            --set vpcId=vpc-03e0ca2e2bfd85c55 \
             --set serviceAccount.create=false \
             --set serviceAccount.name=aws-load-balancer-controller \
             --version 1.14.0
