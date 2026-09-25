@@ -29,15 +29,17 @@ spec:
           ports:
             - containerPort: {{ .Values.jobService.port }}
 
+          {{- with .Values.jobService.env }}
           env:
             - name: DB_URL
-              value: "{{ .Values.jobService.env.DB_URL }}"
+              value: {{ .DB_URL | quote }}
 
             - name: DB_USERNAME
-              value: "{{ .Values.jobService.env.DB_USERNAME }}"
+              value: {{ .DB_USERNAME | quote }}
 
             - name: DB_PASSWORD
-              value: "{{ .Values.jobService.env.DB_PASSWORD }}"
+              value: {{ .DB_PASSWORD | quote }}
+          {{- end }}
 
 ---
 ---
@@ -70,15 +72,17 @@ spec:
           ports:
             - containerPort: {{ .Values.cvService.port }}
 
+          {{- with .Values.cvService.env }}
           env:
             - name: DB_URL
-              value: {{ .Values.cvService.env.DB_URL | quote }}
+              value: {{ .DB_URL | quote }}
 
             - name: DB_USERNAME
-              value: {{ .Values.cvService.env.DB_USERNAME | quote }}
+              value: {{ .DB_USERNAME | quote }}
 
             - name: DB_PASSWORD
-              value: {{ .Values.cvService.env.DB_PASSWORD | quote }}
+              value: {{ .DB_PASSWORD | quote }}
+          {{- end }}
 
             - name: OPENAI_API_KEY
               valueFrom:
