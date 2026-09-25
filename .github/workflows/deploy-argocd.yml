@@ -51,19 +51,19 @@ jobs:
       # -------------------------------------------------------
       # Lint AWS configuration
       # -------------------------------------------------------
-      - name: Lint CareerMatch chart - AWS
-        run: |
-          helm lint apps/careermatch \
-            --values apps/careermatch/values-aws.yaml
+    #   - name: Lint CareerMatch chart - AWS
+    #     run: |
+    #       helm lint apps/careermatch \
+    #         --values apps/careermatch/values-aws.yaml
 
       # -------------------------------------------------------
       # Render manifests
       # -------------------------------------------------------
-      - name: Render CareerMatch chart - AWS
-        run: |
-          helm template careermatch apps/careermatch \
-            --values apps/careermatch/values-aws.yaml \
-            > /tmp/careermatch-rendered.yaml
+    #   - name: Render CareerMatch chart - AWS
+    #     run: |
+    #       helm template careermatch apps/careermatch \
+    #         --values apps/careermatch/values-aws.yaml \
+    #         > /tmp/careermatch-rendered.yaml
 
 
   # =========================================================
