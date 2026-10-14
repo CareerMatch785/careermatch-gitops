@@ -10,7 +10,7 @@ spec:
 
   source:
     repoURL: https://github.com/CareerMatch785/careermatch-gitops.git
-    targetRevision: master
+    targetRevision: main
 
     path: apps/careermatch
 
