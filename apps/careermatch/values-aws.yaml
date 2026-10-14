@@ -1,19 +1,19 @@
 cvService:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-cv-service
-    tag: latest
+    tag: 1.1
     pullPolicy: Always
 
 jobService:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-job-service
-    tag: latest
+    tag: 1.1
     pullPolicy: Always
 
 matchingService:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-matching-service
-    tag: latest
+    tag: 1.1
     pullPolicy: Always
 
   env:
@@ -23,7 +23,7 @@ matchingService:
 jobSourceService:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-job-source-service
-    tag: latest
+    tag: 1.1
     pullPolicy: Always
 
   env:
@@ -34,5 +34,5 @@ jobSourceService:
 frontend:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-frontend
-    tag: latest
+    tag: 1.1
     pullPolicy: Always
