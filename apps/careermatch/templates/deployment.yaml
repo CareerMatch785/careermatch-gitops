@@ -90,8 +90,8 @@ spec:
           ports:
             - containerPort: {{ .Values.cvService.port }}
 
-          {{- with .Values.cvService.env }}
           env:
+          {{- with .Values.cvService.env }}
             - name: DB_URL
               value: {{ .DB_URL | quote }}
 
