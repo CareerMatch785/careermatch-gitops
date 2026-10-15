@@ -228,6 +228,8 @@ jobs:
             --namespace argocd \
             --create-namespace \
             --set 'configs.params.server\.insecure=true' \
+            --set 'configs.params.server\.rootpath=/argocd' \
+            --set 'configs.params.server\.basehref=/argocd' \
             --wait \
             --timeout 5m
 
