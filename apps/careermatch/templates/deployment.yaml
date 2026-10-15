@@ -171,6 +171,7 @@ spec:
         app: job-source-service
 
     spec:
+      serviceAccountName: job-source-service
       containers:
         - name: job-source-service
           image: "{{ .Values.jobSourceService.image.repository }}:{{ .Values.jobSourceService.image.tag }}"
