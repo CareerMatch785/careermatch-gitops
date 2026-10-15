@@ -16,9 +16,6 @@ spec:
         app: job-service
 
     spec:
-      imagePullSecrets:
-        - name: ecr-secret
-
       containers:
         - name: job-service
 
@@ -79,9 +76,6 @@ spec:
         app: cv-service
 
     spec:
-      imagePullSecrets:
-        - name: ecr-secret
-
       containers:
         - name: cv-service
           image: "{{ .Values.cvService.image.repository }}:{{ .Values.cvService.image.tag }}"
@@ -146,8 +140,6 @@ spec:
       labels:
         app: matching-service
     spec:
-      imagePullSecrets:
-        - name: ecr-secret
       containers:
         - name: matching-service
           image: "{{ .Values.matchingService.image.repository }}:{{ .Values.matchingService.image.tag }}"
@@ -179,9 +171,6 @@ spec:
         app: job-source-service
 
     spec:
-      imagePullSecrets:
-        - name: ecr-secret
-
       containers:
         - name: job-source-service
           image: "{{ .Values.jobSourceService.image.repository }}:{{ .Values.jobSourceService.image.tag }}"
@@ -224,9 +213,6 @@ spec:
         app: frontend
 
     spec:
-      imagePullSecrets:
-        - name: ecr-secret
-
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
