@@ -3,6 +3,8 @@ cvService:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-cv-service
     tag: 1.1
     pullPolicy: Always
+  env:
+    DB_URL: jdbc:postgresql://careermatch-postgres-e51851bd064169bcd0cefbbc44.cp6uscuss4jx.us-east-1.rds.amazonaws.com:5432/careermatch
 
 jobService:
   image:
