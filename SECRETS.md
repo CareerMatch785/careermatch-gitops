@@ -60,7 +60,7 @@ kubectl -n external-secrets rollout status deployment/external-secrets
 
 La sincronizacion esta declarada en [apps/careermatch/templates/external-secret.yaml](apps/careermatch/templates/external-secret.yaml). Los valores generados son Secrets de Kubernetes namespaced en `carrermatch`; los Deployments no leen directamente AWS Secrets Manager.
 
-La referencia de OpenAI esta configurada para copiar el valor completo de `SecretString`. Si ese secreto se cambia a un objeto JSON, actualiza `remoteRef.property` para seleccionar la propiedad que contiene la API key.
+El secreto de OpenAI en AWS es un objeto JSON. El `ExternalSecret` usa `remoteRef.property: OPENAI_API_KEY` para copiar solo la API key como valor plano a `openai-secret`; no elimines esa propiedad mientras el secreto remoto siga siendo JSON.
 
 ## URL de base de datos
 
