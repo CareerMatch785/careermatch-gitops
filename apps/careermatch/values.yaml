@@ -15,6 +15,9 @@ jobService:
 externalSecrets:
   enabled: false
 
+ingress:
+  enabled: false
+
 matchingService:
   image:
     repository: careermatch-matching-service

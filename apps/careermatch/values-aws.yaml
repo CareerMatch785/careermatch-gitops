@@ -17,6 +17,9 @@ jobService:
 externalSecrets:
   enabled: true
 
+ingress:
+  enabled: true
+
 matchingService:
   image:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-matching-service
