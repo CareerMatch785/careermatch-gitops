@@ -12,6 +12,9 @@ jobService:
 
   port: 8082
 
+externalSecrets:
+  enabled: false
+
 matchingService:
   image:
     repository: careermatch-matching-service

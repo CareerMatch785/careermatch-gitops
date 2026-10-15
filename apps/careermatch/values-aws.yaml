@@ -9,6 +9,11 @@ jobService:
     repository: 954976288182.dkr.ecr.us-east-1.amazonaws.com/careermatch-job-service
     tag: 1.1
     pullPolicy: Always
+  env:
+    DB_URL: ""
+
+externalSecrets:
+  enabled: true
 
 matchingService:
   image:

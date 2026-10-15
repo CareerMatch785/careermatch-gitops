@@ -29,6 +29,23 @@ spec:
           ports:
             - containerPort: {{ .Values.jobService.port }}
 
+          {{- if .Values.externalSecrets.enabled }}
+          env:
+            - name: DB_URL
+              value: {{ required "jobService.env.DB_URL must be set in the selected values file" .Values.jobService.env.DB_URL | quote }}
+
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: careermatch-db-secret
+                  key: DB_USERNAME
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: careermatch-db-secret
+                  key: DB_PASSWORD
+          {{- else }}
           {{- with .Values.jobService.env }}
           env:
             - name: DB_URL
@@ -39,6 +56,7 @@ spec:
 
             - name: DB_PASSWORD
               value: {{ .DB_PASSWORD | quote }}
+          {{- end }}
           {{- end }}
 
 ---
