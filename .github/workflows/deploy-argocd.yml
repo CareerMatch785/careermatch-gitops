@@ -227,6 +227,7 @@ jobs:
           helm upgrade --install argocd argo/argo-cd \
             --namespace argocd \
             --create-namespace \
+            --version 10.10.5 \
             --set 'configs.params.server\.insecure=true' \
             --set 'configs.params.server\.rootpath=/argocd' \
             --set 'configs.params.server\.basehref=/argocd' \
