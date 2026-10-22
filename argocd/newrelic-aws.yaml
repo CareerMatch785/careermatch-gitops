@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: newrelic-aws
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://helm-charts.newrelic.com
+      chart: nri-bundle
+      targetRevision: "8.0.28"
+      helm:
+        releaseName: newrelic
+        valueFiles:
+          - $values/platform/newrelic/values-aws.yaml
+    - repoURL: https://github.com/CareerMatch785/careermatch-gitops.git
+      targetRevision: main
+      ref: values
+      path: platform/newrelic/secrets
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: newrelic
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
